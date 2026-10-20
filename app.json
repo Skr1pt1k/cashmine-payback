@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "cashmine-payback",
+    "name": "CashMine",
     "slug": "cashmine-payback",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "cashminepayback",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "dark",
     "ios": {
       "icon": "./assets/expo.icon"
     },
@@ -37,6 +37,7 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "backgroundColor": "#0B0F14"
   }
 }

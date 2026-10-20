@@ -12,7 +12,8 @@ export const styles = StyleSheet.create({
     borderRadius: radius.md,
     color: colors.text,
     padding: spacing.md,
-    fontSize: 14,
+    // 16px+ stops iOS Safari from zooming the page on focus.
+    fontSize: 16,
     minHeight: 96,
     fontFamily: 'monospace',
   },

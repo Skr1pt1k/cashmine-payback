@@ -3,8 +3,11 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { queryClient } from '@/lib/queryClient';
+import { applyWebGlobalStyles } from '@/lib/webGlobalStyles';
 import { TokenProvider, TokenScreen, useToken } from '@/packages/Auth';
 import { colors } from '@/shared/theme';
+
+applyWebGlobalStyles();
 
 function RootNavigator() {
   const { token } = useToken();
