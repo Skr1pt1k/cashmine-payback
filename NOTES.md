@@ -24,17 +24,17 @@ The server moves a claim from `available` to `claiming` at once, but `/balances`
 
 ## Working with AI
 
-Everything was built in Claude Code. The full session is in `ai-logs/`; search the quoted text to find each moment.
+Everything was built in Claude Code. The full session is in `ai-logs/` (translated from Ukrainian); search the quoted text to find each moment.
 
-1. **A prompt that didn't work.** Before the task I asked for short, summarised AI logs (`стисло і по факту`). The brief then said *"do not tidy them up"*, so I switched to a raw export with only the token and emails redacted.
+1. **A prompt that didn't work.** Before the task I asked for short, summarised AI logs (`brief and to the point`). The brief then said *"do not tidy them up"*, so I switched to a raw export with only the token and emails redacted.
 2. **AI output that was wrong or risky.**
    - AI wrote a test expecting `82057n` cents for $820.5773. The first run failed: the expectation was wrong, the code was right.
-   - AI mapped any `fetch` exception to "Network error". Testing on my phone, a token with non-ASCII characters showed "Network error" instead of "invalid token" (`ось що після того як просто ввів неправильний токен`). Fixed by validating the token format.
-   - Copying the Expo template overwrote my `CLAUDE.md` (`rsync перезаписав`).
+   - AI mapped any `fetch` exception to "Network error". Testing on my phone, a token with non-ASCII characters showed "Network error" instead of "invalid token" (`here's what happens after I just entered a wrong token`). Fixed by validating the token format.
+   - Copying the Expo template overwrote my `CLAUDE.md` (`rsync overwrote`).
 3. **Disagreeing with the AI.**
-   - AI planned EAS Hosting. I asked for Vercel instead (`деплой точно на eas`), which surfaced 404s on reload for dynamic routes and led to the SPA rewrite.
+   - AI planned EAS Hosting. I asked for Vercel instead (`deploy definitely on eas`), which surfaced 404s on reload for dynamic routes and led to the SPA rewrite.
    - I rejected the naive optimistic balance update (approach 2).
-4. **AI checking AI.** A separate read-only critic agent reviewed the app against the brief (`створи агента критики`). It found 3 real bugs in the unknown-outcome flow. For example, after Max + 504 the screen said "Nothing to claim yet" instead of "Check again", and a 4xx after a timeout dropped the key, which could allow a second claim. I checked each one in the code before fixing (`99d4d96`, `0130601`).
+4. **AI checking AI.** A separate read-only critic agent reviewed the app against the brief (`create a critic agent`). It found 3 real bugs in the unknown-outcome flow. For example, after Max + 504 the screen said "Nothing to claim yet" instead of "Check again", and a 4xx after a timeout dropped the key, which could allow a second claim. I checked each one in the code before fixing (`99d4d96`, `0130601`).
 
 ## Not done / known issues
 
