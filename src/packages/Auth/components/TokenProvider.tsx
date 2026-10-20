@@ -2,6 +2,7 @@ import { createContext, useCallback, useMemo, useState, type ReactNode } from 'r
 import { useQueryClient } from '@tanstack/react-query';
 import { configureApiClient } from '@/lib/apiClient';
 import { tokenStorage } from '@/lib/tokenStorage';
+import { localClaimsStore } from '@/shared/localClaims';
 
 type TokenContextValue = {
   token: string | null;
@@ -23,6 +24,7 @@ export function TokenProvider({ children }: { children: ReactNode }) {
     getToken: () => token,
     onUnauthorized: () => {
       tokenStorage.clear();
+      localClaimsStore.clear();
       setTokenState(null);
       setRejected(true);
     },
@@ -32,6 +34,7 @@ export function TokenProvider({ children }: { children: ReactNode }) {
     (next: string) => {
       // Data is private per token: never show one token's data under another.
       queryClient.clear();
+      localClaimsStore.clear();
       tokenStorage.set(next);
       setRejected(false);
       setTokenState(next);
@@ -41,6 +44,7 @@ export function TokenProvider({ children }: { children: ReactNode }) {
 
   const clearToken = useCallback(() => {
     queryClient.clear();
+      localClaimsStore.clear();
     tokenStorage.clear();
     setRejected(false);
     setTokenState(null);

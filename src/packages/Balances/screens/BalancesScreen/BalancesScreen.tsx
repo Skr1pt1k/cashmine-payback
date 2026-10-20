@@ -14,7 +14,7 @@ export function BalancesScreen() {
   const router = useRouter();
   const { clearToken } = useToken();
   const now = useNow();
-  const { data, error, isPending, isFetching, refetch } = useBalances();
+  const { data, error, isPending, isFetching, refetch, inFlightByAsset } = useBalances();
 
   const header = (
     <View style={styles.topBar}>
@@ -86,6 +86,11 @@ export function BalancesScreen() {
               key={balance.asset}
               balance={balance}
               onClaim={() => router.push({ pathname: '/claim/[asset]', params: { asset: balance.asset } })}
+              onViewClaim={
+                inFlightByAsset[balance.asset]
+                  ? () => router.push({ pathname: '/claim/status/[id]', params: { id: inFlightByAsset[balance.asset] } })
+                  : undefined
+              }
             />
           ))}
         </View>

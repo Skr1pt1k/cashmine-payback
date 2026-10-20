@@ -3,6 +3,7 @@ import { Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button, EmptyView, ErrorView, LoadingView, Screen } from '@/components';
+import { localClaimsStore } from '@/shared/localClaims';
 import { CLAIM_ERROR_TEXT, canClaim, maxClaimAmount, quoteClaim } from '@/shared/money';
 import { queryKeys } from '@/shared/query';
 import { colors } from '@/shared/theme';
@@ -25,6 +26,8 @@ export function ClaimScreen({ asset }: { asset: string }) {
 
   const onCreated = useCallback(
     (claim: Claim) => {
+      // Show the claim in the balance right away, until a snapshot includes it.
+      localClaimsStore.add({ id: claim.id, asset: claim.asset, amount: claim.amount, createdAt: claim.createdAt });
       queryClient.invalidateQueries({ queryKey: queryKeys.balances });
       queryClient.invalidateQueries({ queryKey: queryKeys.activity });
       router.replace({ pathname: '/claim/status/[id]', params: { id: claim.id } });

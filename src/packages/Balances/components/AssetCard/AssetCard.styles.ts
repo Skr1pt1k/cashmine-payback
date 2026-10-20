@@ -19,4 +19,6 @@ export const styles = StyleSheet.create({
   metaValue: { color: colors.textSecondary, fontSize: 14, fontVariant: ['tabular-nums'] },
   claimingValue: { color: colors.warning, fontSize: 14, fontVariant: ['tabular-nums'] },
   col: { flex: 1, gap: 2 },
+  claimingHint: { color: colors.warning, fontSize: 11 },
+  actions: { gap: spacing.xs },
 });
