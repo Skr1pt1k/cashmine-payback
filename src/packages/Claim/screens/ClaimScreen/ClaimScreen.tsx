@@ -13,6 +13,13 @@ import { DestinationPicker, SummaryRow } from '@/packages/Claim/components';
 import { useClaimOptions, useSubmitClaim } from '@/packages/Claim/hooks';
 import { styles } from './ClaimScreen.styles';
 
+const UNKNOWN_REASON: Partial<Record<string, string>> = {
+  TIMEOUT: 'The server didn’t answer in time.',
+  NETWORK: 'The connection dropped before we got an answer.',
+  SERVER: 'The server had a temporary problem.',
+  RATE_LIMITED: 'The server is busy right now.',
+};
+
 export function ClaimScreen({ asset }: { asset: string }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -48,6 +55,44 @@ export function ClaimScreen({ asset }: { asset: string }) {
   const selectedDestination = destinationId ?? options.data?.destinations[0]?.id ?? null;
 
   const back = <Button title="‹ Back" variant="ghost" onPress={() => router.back()} />;
+
+  // ---- In flight / unknown outcome. Rendered from the body that was actually sent, before any
+  // check on the current balance: after a claim goes through, the balance no longer allows the
+  // same amount, and that must not hide the "couldn't confirm" state.
+  if (state.status === 'unknown' || state.status === 'submitting') {
+    const sent = state.body;
+    const sentTo = options.data?.destinations.find((d) => d.id === sent.destinationId)?.label ?? sent.destinationId;
+    if (state.status === 'submitting') {
+      return (
+        <Screen>
+          <Text style={styles.title}>Confirm claim</Text>
+          <View style={styles.card}>
+            <SummaryRow label="Amount" value={`${sent.amount} ${sent.asset}`} />
+            <SummaryRow label="To" value={sentTo} />
+          </View>
+          <Button title={state.attempt > 1 ? `Retrying… (${state.attempt})` : 'Submitting…'} onPress={() => {}} loading />
+        </Screen>
+      );
+    }
+    return (
+      <Screen>
+        <Text style={styles.title}>Claim {sent.asset}</Text>
+        <View style={styles.warnCard}>
+          <Text style={styles.warnTitle}>We couldn’t confirm your claim</Text>
+          <Text style={styles.warnText}>
+            {UNKNOWN_REASON[state.error.code] ?? 'The server did not give a clear answer.'} Your claim of {sent.amount}{' '}
+            {sent.asset} may or may not have been created. Checking again is safe: it can never create a second claim.
+          </Text>
+          <Button title="Check again" onPress={retry} />
+          <Button title="Go to activity" variant="secondary" onPress={() => router.replace('/activity')} />
+        </View>
+        <View style={styles.card}>
+          <SummaryRow label="Amount" value={`${sent.amount} ${sent.asset}`} />
+          <SummaryRow label="To" value={sentTo} />
+        </View>
+      </Screen>
+    );
+  }
 
   if (balances.isPending || options.isPending) {
     return (
@@ -95,31 +140,8 @@ export function ClaimScreen({ asset }: { asset: string }) {
   const destinationLabel = options.data.destinations.find((d) => d.id === selectedDestination)?.label ?? '—';
   const showError = touched && quote && !quote.ok;
 
-  // ---- Unknown outcome: never let the user create a new claim while this one may exist.
-  if (state.status === 'unknown' && quote?.ok) {
-    return (
-      <Screen>
-        <Text style={styles.title}>Claim {asset}</Text>
-        <View style={styles.warnCard}>
-          <Text style={styles.warnTitle}>We couldn’t confirm your claim</Text>
-          <Text style={styles.warnText}>
-            The server didn’t answer in time ({state.error.message}). Your claim of {quote.amount} {asset} may or may
-            not have been created. Checking again is safe: it can never create a second claim.
-          </Text>
-          <Button title="Check again" onPress={retry} />
-          <Button title="Go to activity" variant="secondary" onPress={() => router.replace('/activity')} />
-        </View>
-        <View style={styles.card}>
-          <SummaryRow label="Amount" value={`${quote.amount} ${asset}`} />
-          <SummaryRow label="To" value={destinationLabel} />
-        </View>
-      </Screen>
-    );
-  }
-
   // ---- Review & confirm
   if (step === 'review' && quote?.ok && selectedDestination) {
-    const submitting = state.status === 'submitting';
     return (
       <Screen>
         <Text style={styles.title}>Confirm claim</Text>
@@ -132,14 +154,12 @@ export function ClaimScreen({ asset }: { asset: string }) {
         {state.status === 'rejected' ? <Text style={styles.error}>{state.error.message}</Text> : null}
         <View style={styles.actions}>
           <Button
-            title={submitting && state.attempt > 1 ? `Retrying… (${state.attempt})` : 'Confirm claim'}
+            title="Confirm claim"
             onPress={() => submit({ asset, amount: quote.amount, destinationId: selectedDestination })}
-            loading={submitting}
           />
           <Button
             title="Edit"
             variant="secondary"
-            disabled={submitting}
             onPress={() => {
               reset();
               setStep('form');
