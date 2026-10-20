@@ -1,4 +1,5 @@
 import { API_BASE_URL, REQUEST_TIMEOUT_MS } from '@/lib/config';
+import { isValidTokenFormat } from '@/lib/tokenFormat';
 
 export type ApiErrorCode =
   | 'VALIDATION'
@@ -51,6 +52,13 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   const token = getToken();
+  // A token with spaces or non-ASCII characters can't be sent as a header; fetch would throw a
+  // TypeError that looks like a network error. Treat it as an invalid token instead.
+  if (token && !isValidTokenFormat(token)) {
+    clearTimeout(timer);
+    onUnauthorized();
+    throw new ApiError('UNAUTHORIZED', 'Token contains invalid characters', null);
+  }
 
   let response: Response;
   try {

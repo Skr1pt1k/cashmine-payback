@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
 import { Button, Screen } from '@/components';
+import { isValidTokenFormat } from '@/lib/tokenFormat';
 import { colors } from '@/shared/theme';
 import { useToken } from '@/packages/Auth/hooks';
 import { styles } from './TokenScreen.styles';
@@ -9,6 +10,7 @@ export function TokenScreen() {
   const { setToken, rejected } = useToken();
   const [value, setValue] = useState('');
   const trimmed = value.trim();
+  const invalidFormat = trimmed.length > 0 && !isValidTokenFormat(trimmed);
 
   return (
     <Screen>
@@ -26,10 +28,14 @@ export function TokenScreen() {
           placeholderTextColor={colors.textTertiary}
           autoCapitalize="none"
           autoCorrect={false}
+          spellCheck={false}
           multiline
           accessibilityLabel="API token"
         />
-        <Button title="Continue" onPress={() => setToken(trimmed)} disabled={!trimmed} />
+        {invalidFormat ? (
+          <Text style={styles.error}>The token can only contain Latin letters, digits and symbols, with no spaces.</Text>
+        ) : null}
+        <Button title="Continue" onPress={() => setToken(trimmed)} disabled={!trimmed || invalidFormat} />
       </View>
     </Screen>
   );
