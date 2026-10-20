@@ -1,9 +1,5 @@
-import { Text, View } from 'react-native';
+import { BalancesScreen } from '@/packages/Balances';
 
-export default function Home() {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>CashMine</Text>
-    </View>
-  );
+export default function HomeRoute() {
+  return <BalancesScreen />;
 }
