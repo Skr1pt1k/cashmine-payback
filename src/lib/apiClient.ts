@@ -36,6 +36,8 @@ export class ApiError extends Error {
 
 type RequestOptions = {
   method?: 'GET' | 'POST';
+  /** Use this token instead of the stored one (e.g. to verify a token before saving it). */
+  token?: string;
   body?: unknown;
   headers?: Record<string, string>;
 };
@@ -51,12 +53,13 @@ export function configureApiClient(config: { getToken: () => string | null; onUn
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-  const token = getToken();
+  const token = options.token ?? getToken();
+  const isOverride = options.token !== undefined;
   // A token with spaces or non-ASCII characters can't be sent as a header; fetch would throw a
   // TypeError that looks like a network error. Treat it as an invalid token instead.
   if (token && !isValidTokenFormat(token)) {
     clearTimeout(timer);
-    onUnauthorized();
+    if (!isOverride) onUnauthorized();
     throw new ApiError('UNAUTHORIZED', 'Token contains invalid characters', null);
   }
 
@@ -95,7 +98,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
       error?.field,
       error?.retryAfterMs ?? (retryAfterHeader ? retryAfterHeader * 1000 : undefined),
     );
-    if (apiError.code === 'UNAUTHORIZED') onUnauthorized();
+    if (apiError.code === 'UNAUTHORIZED' && !isOverride) onUnauthorized();
     throw apiError;
   }
 
@@ -103,7 +106,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 }
 
 export const apiClient = {
-  get: <T>(path: string) => request<T>(path),
+  get: <T>(path: string, options?: { token?: string }) => request<T>(path, options),
   post: <T>(path: string, body: unknown, headers?: Record<string, string>) =>
     request<T>(path, { method: 'POST', body, headers }),
 };

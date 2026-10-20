@@ -12,7 +12,7 @@ import { BALANCES_REFETCH_MS } from '@/packages/Balances/constants';
 export function useBalances() {
   const query = useQuery({
     queryKey: queryKeys.balances,
-    queryFn: paybackService.getBalances,
+    queryFn: () => paybackService.getBalances(),
     // Server recomputes snapshots every 15s.
     refetchInterval: BALANCES_REFETCH_MS,
   });

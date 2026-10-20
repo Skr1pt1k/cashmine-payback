@@ -3,7 +3,7 @@ import type { ActivityPage, BalancesResponse, Claim, ClaimOptions, CreateClaimIn
 
 export function createPaybackService(api: ApiClient) {
   return {
-    getBalances: () => api.get<BalancesResponse>('/v1/balances'),
+    getBalances: (token?: string) => api.get<BalancesResponse>('/v1/balances', token ? { token } : undefined),
     getClaimOptions: (asset: string) => api.get<ClaimOptions>(`/v1/claim-options?asset=${encodeURIComponent(asset)}`),
     createClaim: (input: CreateClaimInput, idempotencyKey: string) =>
       api.post<Claim>('/v1/claims', input, { 'Idempotency-Key': idempotencyKey }),
