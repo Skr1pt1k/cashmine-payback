@@ -40,7 +40,7 @@ export function BalancesScreen() {
       <Screen>
         {header}
         <ErrorView
-          title="Couldn't load balances"
+          title="Couldn’t load balances"
           message={error?.message ?? 'Unknown error'}
           onRetry={() => refetch()}
           retrying={isFetching}
@@ -72,7 +72,7 @@ export function BalancesScreen() {
       {error ? (
         <View style={styles.banner}>
           <Text style={styles.bannerText}>
-            Couldn't refresh: {error.message}. Showing the last known balances.
+            Couldn’t refresh: {error.message}. Showing the last known balances.
           </Text>
         </View>
       ) : null}

@@ -62,7 +62,7 @@ export function ClaimScreen({ asset }: { asset: string }) {
         {back}
         {error ? (
           <ErrorView
-            title="Couldn't load claim details"
+            title="Couldn’t load claim details"
             message={error.message}
             onRetry={() => {
               options.refetch();
@@ -98,9 +98,9 @@ export function ClaimScreen({ asset }: { asset: string }) {
       <Screen>
         <Text style={styles.title}>Claim {asset}</Text>
         <View style={styles.warnCard}>
-          <Text style={styles.warnTitle}>We couldn't confirm your claim</Text>
+          <Text style={styles.warnTitle}>We couldn’t confirm your claim</Text>
           <Text style={styles.warnText}>
-            The server didn't answer in time ({state.error.message}). Your claim of {quote.amount} {asset} may or may
+            The server didn’t answer in time ({state.error.message}). Your claim of {quote.amount} {asset} may or may
             not have been created. Checking again is safe: it can never create a second claim.
           </Text>
           <Button title="Check again" onPress={retry} />

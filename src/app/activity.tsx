@@ -1,10 +1,5 @@
-import { Text } from 'react-native';
-import { Screen } from '@/components';
+import { ActivityScreen } from '@/packages/Activity';
 
 export default function ActivityRoute() {
-  return (
-    <Screen>
-      <Text style={{ color: 'white' }}>Activity — coming soon</Text>
-    </Screen>
-  );
+  return <ActivityScreen />;
 }

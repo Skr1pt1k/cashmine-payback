@@ -29,7 +29,7 @@ export function ClaimStatusScreen({ id }: { id: string }) {
   if (!claim) {
     return (
       <Screen>
-        <ErrorView title="Couldn't load claim" message={error?.message ?? ''} onRetry={() => refetch()} retrying={isFetching} />
+        <ErrorView title="Couldn’t load claim" message={error?.message ?? ''} onRetry={() => refetch()} retrying={isFetching} />
         {home}
       </Screen>
     );
@@ -58,7 +58,7 @@ export function ClaimStatusScreen({ id }: { id: string }) {
         <SummaryRow label="Claim ID" value={claim.id} />
       </View>
 
-      {error ? <Text style={styles.hint}>Couldn't refresh status, retrying…</Text> : null}
+      {error ? <Text style={styles.hint}>Couldn’t refresh status, retrying…</Text> : null}
       {home}
     </Screen>
   );
