@@ -1,10 +1,7 @@
-import { Text } from 'react-native';
-import { Screen } from '@/components';
+import { useLocalSearchParams } from 'expo-router';
+import { ClaimScreen } from '@/packages/Claim';
 
 export default function ClaimRoute() {
-  return (
-    <Screen>
-      <Text style={{ color: 'white' }}>Claim — coming soon</Text>
-    </Screen>
-  );
+  const { asset } = useLocalSearchParams<{ asset: string }>();
+  return <ClaimScreen asset={asset} />;
 }
